@@ -21,12 +21,8 @@ num_points = 100000
 rdata = np.abs(np.random.normal(0, 1, num_points))
 thetadata = np.random.uniform(0, 2 * np.pi, num_points)
 
-zdata = np.empty(num_points)
-count = 0
-for r in rdata:
-    zdata[count] = np.random.normal(0, -np.arctan(5*r - 4) + 3*np.pi / 4, 1) / 5 / np.pi
+zdata = np.random.normal(0, -np.arctan(5*rdata - 4) + 3*np.pi / 4, num_points) / 5 / np.pi
 
-    count += 1
 # Convert to rectangular
 xdata = rdata * np.cos(thetadata)
 ydata = rdata * np.sin(thetadata)

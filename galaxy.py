@@ -99,14 +99,15 @@ def generate_galaxy(num_stars, radius):
     stars[:, 0] = np.abs(np.random.normal(0, radius, num_stars))  # Distance from center from gaussian
     stars[:, 1] = np.random.uniform(0, 2 * np.pi, num_stars)  # Uniform dist for angle
     stars[:, 2] = np.random.normal(0, radius / 6 * np.exp(-(stars[:, 0]/radius)**2), num_stars)  # Height of stars depends on r
-    
+
     # Mass of stars
     stars[:, 3] = np.full(num_stars, 1)  # TODO: add the mass of stars to be sampled from a distribution
-    
-    # Velocities TODO: Change this to be initialized properly
-    stars[:, 4] = 0  # Velocity in radial direction
-    stars[:, 5] = 1  # Velocity in theta direction
-    
+
+    # Velocities initialized with unit velocity in random directions
+    #directions = np.random.normal(0, np.pi, )
+    stars[:, 4] = np.random.normal(0, 1, num_stars)  # Velocity in radial direction
+    stars[:, 5] = 3420 * stars[:, 0]**(1/3)  # Velocity in theta direction
+
     return stars
 
 

@@ -47,7 +47,7 @@ def NFW_potential(r,rho_0,r_s):
     return -1*(4*np.pi*rho_0*r_s**3/r)*np.log(1+r/r_s)
 
 
-def grad_lookup(potential, bin_width):
+def gengrad(potential, bin_width):
     '''
     :param potential: lookup table in cylindrical coordinates of potential field
             index: In which the desired force is located, only radius matters since stars are in disk.

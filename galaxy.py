@@ -5,14 +5,8 @@ PK, GP, AG, AB 2019
 import numpy as np
 import matplotlib.pyplot as plt
 from header import *
-
-import numpy as np
 from mpl_toolkits import mplot3d
-import matplotlib.pyplot as plt
 import plotly.graph_objects as go
-
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
 
 # Need to sample from gaussian to get initial distribution of points
 # Generate random points in cylindrical to have the symmetry, then convert to rectangular
@@ -25,9 +19,6 @@ def generate_galaxy(num_stars, radius):
     zdata = np.random.normal(0, -np.arctan(5*rdata - 4) + 3*np.pi / 4, num_stars) / 5 / np.pi
 
     return rdata, thetadata, zdata
-
-
-rdata, thetadata, zdata = generate_galaxy(10000, 1)
 
 
 def graph(rdata, thetadata, zdata):
@@ -47,4 +38,10 @@ def graph(rdata, thetadata, zdata):
 
     fig.show()
 
-graph(rdata, thetadata, zdata)
+if __name__ == '__main__':
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    rdata, thetadata, zdata = generate_galaxy(10000, 1)
+
+    graph(rdata, thetadata, zdata)

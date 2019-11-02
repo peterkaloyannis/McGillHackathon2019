@@ -60,43 +60,34 @@ def gengrad(potential, bin_width):
     return force
 
 
-def generate_galaxy(num_stars, r):
-    '''
-    -num_stars is the number of stars
-    -r is the radius of the galaxy
-    '''
-    rdata = np.abs(np.random.normal(0, r, num_stars))
+def generate_galaxy(num_stars, radius):
+    rdata = np.abs(np.random.normal(0, radius, num_stars))
     thetadata = np.random.uniform(0, 2 * np.pi, num_stars)
 
-    zdata = np.random.normal(0, -np.arctan(5*rdata - 4) + 3*np.pi / 4, num_stars) / 5 / np.pi
+    zdata = np.random.normal(0, radius / 6 * np.exp(-(rdata/radius)**2), num_stars)
 
     return rdata, thetadata, zdata
 
 
 def graph(rdata, thetadata, zdata):
-    '''
-    - rdata is the radial positions
-    - thetadata is the angular positions
-    - zdata is the height positions
-    '''
     # Convert to rectangular
     xdata = rdata * np.cos(thetadata)
     ydata = rdata * np.sin(thetadata)
 
     fig = go.Figure(data=[go.Scatter3d(x=xdata, y=ydata, z=zdata,
                                        mode='markers',
-                                       marker = dict(
-                                           size = 6,
-                                           color = zdata,
-                                           colorscale = 'viridis',
-                                           opacity = 0.8
+                                       marker=dict(
+                                           size=6,
+                                           color=zdata,  # set color to an array/list of desired values
+                                           colorscale='haline',  # choose a colorscale
+                                           opacity=0.8
                                        )
                                        )])
 
     fig.update_layout(scene = dict(
-            xaxis = dict(nticks=4, range=[-3, 3],),
-                         yaxis = dict(nticks=4, range=[-3, 3],),
-                         zaxis = dict(nticks=4, range=[-3, 3],),),
+            xaxis = dict(nticks=4, range=[-3*radius, 3*radius],),
+                         yaxis = dict(nticks=4, range=[-3*radius, 3*radius],),
+                         zaxis = dict(nticks=4, range=[-3*radius, 3*radius],),),
                          width=1680,
                          margin=dict(r=20, l=10, b=10, t=10))
 

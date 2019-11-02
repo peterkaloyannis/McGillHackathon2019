@@ -46,6 +46,20 @@ def NFW_potential(r,rho_0,r_s):
     '''
     return -1*(4*np.pi*rho_0*r_s**3/r)*np.log(1+r/r_s)
 
+
+def grad_lookup(potential, bin_width):
+    '''
+    :param potential: lookup table in cylindrical coordinates of potential field
+            index: In which the desired force is located, only radius matters since stars are in disk.
+            bin_width: Distance between scalar values in points.
+    :return: inward radial force based on the radius. Scalar.
+    '''
+
+    force = - (potential[1:] - potential[:-1]) / bin_width
+
+    return force
+
+
 def generate_galaxy(num_stars, r):
     '''
     -num_stars is the number of stars

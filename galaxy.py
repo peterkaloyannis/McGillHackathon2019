@@ -10,6 +10,34 @@ import plotly.graph_objects as go
 
 # Need to sample from gaussian to get initial distribution of points
 # Generate random points in cylindrical to have the symmetry, then convert to rectangular
+def getAr():
+    #returns radial acceleration
+    return 10
+def getAt():
+    #returns angular acceleration
+    return 0
+
+def leapfrog(i, dt, r, vr, theta, vtheta):
+    '''
+     - i = index of loop
+     - dt = size of timestep
+     - r = current radius
+     - vr = current radial velocity
+     - theta = current angle
+     - vtheta = current angular velocity
+    '''
+    rNew = 0
+    thetaNew =0
+
+    if (i%2!=0): #Updates vr and vtheta for odd iterations of loop
+        vrNew = getAr()*dt
+        rNew = r + vrNew*dt
+        vthetaNew = getAt()*dt
+        thetaNew = theta + vthetaNew*dt
+    else: #Does not update vr and vtheta for even iterations of loop
+        rNew = r + vr*dt
+        thetaNew = theta + vtheta*dt
+    return rNew, thetaNew
 
 def interpolatelookup(table, r, r_range= r_range, r_step= r_step):
     '''

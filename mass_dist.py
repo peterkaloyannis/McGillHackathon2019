@@ -34,23 +34,11 @@ def find_nearest(cum_array,mass_array,value):
     else:
         return mass_array[idx]
 
-"""
-x = np.exp(np.linspace(-2.66,5,10000))
-print(x)
-# x = np.linspace(0.07,200)
-y = mass_dist(x)
-y = y/np.sum(y)
-z = cumulative_dist(y)
-
-print(find_nearest(z,x,0.98))
-
-# plt.plot(np.log(x),np.log(y))
-# plt.plot(np.log(x),z)
-plt.plot(x,y)
-plt.show()
-"""
-
 def mass_generator(length):
+    """
+    Inputs: integer
+    Outputs: list of masses with length equal to the input integer
+    """
     random_array = np.random.rand(length)
     mass_list = []
     for i in range(length):

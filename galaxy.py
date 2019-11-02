@@ -94,7 +94,7 @@ def generate_galaxy(num_stars, radius):
     - radius is the radius in which around two thirds of the stars lie (one sigma)
     returns the coordinates of each star, the mass, the velocity in (r, theta) coordinates
     """
-    stars = np.emtpy((num_stars, 6))
+    stars = np.empty((num_stars, 6))
     # Work in cylindrical coordinates
     stars[:, 0] = np.abs(np.random.normal(0, radius, num_stars))  # Distance from center from gaussian
     stars[:, 1] = np.random.uniform(0, 2 * np.pi, num_stars)  # Uniform dist for angle

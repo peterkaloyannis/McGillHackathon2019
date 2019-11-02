@@ -2,8 +2,8 @@
 This file will contain a bunch of default settings and universal constants used by the code but not available from numpy or scipy to be used in all code
 '''
 
-r_range = 1 #maximum radius
-r_step = 0.001 #radial step
+r_range = 50000 #maximum radius ly
+r_step = 1 #radial step
 dt = 1 #time step
 num_stars = 100000 #number of stars
 

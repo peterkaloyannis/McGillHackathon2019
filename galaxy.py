@@ -11,6 +11,33 @@ import plotly.graph_objects as go
 # Need to sample from gaussian to get initial distribution of points
 # Generate random points in cylindrical to have the symmetry, then convert to rectangular
 
+def interpolatelookup(table, r, r_range= r_range, r_step= r_step):
+    '''
+    - table is the lookup table
+    - r_range is the maximum radius
+    - r_step is the radial step
+    - r is the current radius
+    '''
+    r_lower = np.floor(r) #bottom radius
+    bottom_index = int(r_lower*r_step)
+    top_index = bottom_index+1
+    delta_r = r-bottom_index
+
+    return (table[top_index]-table[bottom_index])/r_step*delta_r+table[bottom_index] 
+
+def genlookup(r_range, r_step, func, values,name):
+    '''
+    - r_range is the maximum radius
+    - r_step is the radial resolution of the lookup table
+    - func is the funtion to generate a lookup for
+    - values are the non radius inputs of the function
+    - name is the filename of the lookup
+    '''
+    size = r_range/r_step
+    r = np.arange(1, size)*r_step
+    answers = func(r, *values)
+    np.save(name, answers)
+
 def NFW_potential(r,rho_0,r_s):
     '''
     - r is the radius
@@ -63,16 +90,21 @@ def graph(rdata, thetadata, zdata):
 
 if __name__ == '__main__':
 
-    # x = np.linspace(1,50001,50001)
+    x = np.linspace(1,50001,50001)
     # y = NFW_potential(x,1e-21,25000)
     # plt.plot(x,y)
     # plt.xlabel("Radius [ly]")
     # plt.ylabel("Potential Energy [mks]")
     # plt.show()
 
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+    # fig = plt.figure()
+    # ax = fig.add_subplot(111, projection='3d')
 
-    rdata, thetadata, zdata = generate_galaxy(num_stars, r_range)
+    # rdata, thetadata, zdata = generate_galaxy(num_stars, r_range)
 
-    graph(rdata, thetadata, zdata)
+    # graph(rdata, thetadata, zdata)
+    genlookup(r_range, r_step, NFW_potential, [rho_0,r_s], "potentials.npy")
+    potential = np.load('potentials.npy')
+    print(interpolatelookup(potential, 10003.7))
+    plt.plot(potential)
+    plt.show()

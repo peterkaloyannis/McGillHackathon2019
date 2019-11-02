@@ -5,6 +5,7 @@ PK, GP, AG, AB 2019
 import numpy as np
 import matplotlib.pyplot as plt
 from header import *
+
 import numpy as np
 from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
@@ -26,21 +27,24 @@ def generate_galaxy(num_stars, radius):
     return rdata, thetadata, zdata
 
 
-# Convert to rectangular
 rdata, thetadata, zdata = generate_galaxy(10000, 1)
 
-xdata = rdata * np.cos(thetadata)
-ydata = rdata * np.sin(thetadata)
-# Helix equation
 
-fig = go.Figure(data=[go.Scatter3d(x=xdata, y=ydata, z=zdata,
-                                   mode='markers')])
+def graph(rdata, thetadata, zdata):
+    # Convert to rectangular
+    xdata = rdata * np.cos(thetadata)
+    ydata = rdata * np.sin(thetadata)
 
-fig.update_layout(scene = dict(
-        xaxis = dict(nticks=4, range=[-3, 3],),
-                     yaxis = dict(nticks=4, range=[-3, 3],),
-                     zaxis = dict(nticks=4, range=[-3, 3],),),
-                     width=1680,
-                     margin=dict(r=20, l=10, b=10, t=10))
+    fig = go.Figure(data=[go.Scatter3d(x=xdata, y=ydata, z=zdata,
+                                       mode='markers')])
 
-fig.show()
+    fig.update_layout(scene = dict(
+            xaxis = dict(nticks=4, range=[-3, 3],),
+                         yaxis = dict(nticks=4, range=[-3, 3],),
+                         zaxis = dict(nticks=4, range=[-3, 3],),),
+                         width=1680,
+                         margin=dict(r=20, l=10, b=10, t=10))
+
+    fig.show()
+
+graph(rdata, thetadata, zdata)

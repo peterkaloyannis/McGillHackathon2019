@@ -5,7 +5,6 @@ PK, GP, AG, AB 2019
 import numpy as np
 import matplotlib.pyplot as plt
 from header import *
-
 import numpy as np
 from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
@@ -17,16 +16,21 @@ ax = fig.add_subplot(111, projection='3d')
 # Need to sample from gaussian to get initial distribution of points
 # Generate random points in cylindrical to have the symmetry, then convert to rectangular
 
-num_points = 100000
-rdata = np.abs(np.random.normal(0, 1, num_points))
-thetadata = np.random.uniform(0, 2 * np.pi, num_points)
 
-zdata = np.random.normal(0, -np.arctan(5*rdata - 4) + 3*np.pi / 4, num_points) / 5 / np.pi
+def generate_galaxy(num_stars, radius):
+    rdata = np.abs(np.random.normal(0, radius, num_stars))
+    thetadata = np.random.uniform(0, 2 * np.pi, num_stars)
+
+    zdata = np.random.normal(0, -np.arctan(5*rdata - 4) + 3*np.pi / 4, num_stars) / 5 / np.pi
+
+    return rdata, thetadata, zdata
+
 
 # Convert to rectangular
+rdata, thetadata, zdata = generate_galaxy(10000, 1)
+
 xdata = rdata * np.cos(thetadata)
 ydata = rdata * np.sin(thetadata)
-
 # Helix equation
 
 fig = go.Figure(data=[go.Scatter3d(x=xdata, y=ydata, z=zdata,

@@ -89,12 +89,25 @@ def gengrad(potential, bin_width):
 
 
 def generate_galaxy(num_stars, radius):
-    rdata = np.abs(np.random.normal(0, radius, num_stars))
-    thetadata = np.random.uniform(0, 2 * np.pi, num_stars)
-
-    zdata = np.random.normal(0, radius / 6 * np.exp(-(rdata/radius)**2), num_stars)
-
-    return rdata, thetadata, zdata
+    """
+    - num_stars is the number of stars in the galaxy
+    - radius is the radius in which around two thirds of the stars lie (one sigma)
+    returns the coordinates of each star, the mass, the velocity in (r, theta) coordinates
+    """
+    stars = np.emtpy((num_stars, 6))
+    # Work in cylindrical coordinates
+    stars[:, 0] = np.abs(np.random.normal(0, radius, num_stars))  # Distance from center from gaussian
+    stars[:, 1] = np.random.uniform(0, 2 * np.pi, num_stars)  # Uniform dist for angle
+    stars[:, 2] = np.random.normal(0, radius / 6 * np.exp(-(rdata/radius)**2), num_stars)  # Height of stars depends on r
+    
+    # Mass of stars
+    stars[:, 3] = np.full(num_stars, 1)  # TODO: add the mass of stars to be sampled from a distribution
+    
+    # Velocities TODO: Change this to be initialized properly
+    stars[:, 4] = 0  # Velocity in radial direction
+    stars[:, 5] = 1  # Velocity in theta direction
+    
+    return stars
 
 
 def graph(rdata, thetadata, zdata):

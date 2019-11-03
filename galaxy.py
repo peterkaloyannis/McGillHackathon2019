@@ -98,6 +98,19 @@ def gengrad(potential, bin_width):
 
     return field
 
+def get_density(stars):
+
+    density = np.empty(num_stars)
+    count = 0
+    for star in stars:
+
+        for star2 in stars:
+            if np.abs(star[0] - star2[0]) < 1000 and np.abs(star[1] - star2[1]) < 0.5:
+                density[count] += 1
+
+        count += 1
+
+    return density
 
 def generate_galaxy(num_stars, radius):
     """

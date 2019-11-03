@@ -21,3 +21,6 @@ c = 2.99e10 #speed of light (cgs)
 fps = 20 #framerate
 scale = 5e6
 # wframe = None
+
+ang_std = 10
+elevation = 30

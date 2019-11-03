@@ -18,6 +18,7 @@ if __name__=='__main__':
     # wframe = None
     global galaxy
     fig = plt.figure()
+    fig.set_size_inches(10, 7, True)
     ax = fig.add_subplot(111, projection='3d')
     ax.view_init(elev=30, azim=0)
     ax.set_zlim(-3*r_range, 3*r_range)
@@ -30,6 +31,6 @@ if __name__=='__main__':
     ani = animation.FuncAnimation(fig, update, 400, interval=1000/fps, fargs = (galaxy_parameters,ax,gradient, ))
     print('ass')
     fn = 'gacjasasld'
-    ani.save(fn+'.mp4',fps=fps)
+    ani.save(fn+'.mp4',fps=fps, dpi=300)
     
     np.savetxt("motions.csv", motion.reshape((300, num_stars)), delimiter=',')

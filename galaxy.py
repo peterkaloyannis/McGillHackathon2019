@@ -32,10 +32,10 @@ def update(idx, galaxy_parameters, ax, gradient):
 
     if idx % 5 == 0:
         print("%.2f%% done."% (idx/4))
-        
+
     # Plot the new wireframe and pause briefly before continuing.
     wframe = ax.scatter(galaxy_parameters[:,0], galaxy_parameters[:,1], galaxy_parameters[:, 2],
-                        s=2, c=galaxy_parameters[:, 6], cmap='Spectral')
+                        s=2, c=galaxy_parameters[:, 6], cmap='BuPu')
 
 def rotatopotato(theta, x, y):
     return np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]]) @ [-y, x]
@@ -146,15 +146,17 @@ def generate_galaxy(num_stars, radius):
     # Velocities initialized with unit velocity in random directions
     #directions = np.random.normal(0, np.pi, )
     v = np.sqrt(r * conversion * -interpolatelookup(gradient, r)) / conversion * sectoyear
-    vangs = rand.randn(num_stars) / 1000
+
+    vangs = np.pi / 4 * (1 - stars[:, 0] / np.amax(stars[:, 0]))#rand.randn(num_stars) / ang_std
     a = np.zeros([num_stars, 2])
     for i in range(num_stars):
         a[i] = rotatopotato(0, stars[i, 0], stars[i, 1])
     stars[:, 4] = a[:, 0] / r * v  # Velocity in x direction
     stars[:, 5] = a[:, 1] / r * v  # Velocity in y direction
     #np.sqrt(stars[:, 0] * -interpolatelookup(gradient, stars[:, 0]))
-    stars[:, 6] = np.log(luminosity(stars[:, 3]))
-    stars[:, 7] = get_density(stars)
+    lamp_adjust_lums = lamp_adjust_lum_list(np.array([stars[:, 3]]), 1e10, 5) / 3.843e33
+    stars[:, 6] = np.log(luminosity(stars[:, 3]) + lamp_adjust_lums[0])
+    #stars[:, 7] = get_density(stars)
     return stars, gradient
 
 

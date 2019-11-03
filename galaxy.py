@@ -129,6 +129,8 @@ def generate_galaxy(num_stars, radius):
     stars[:, 4] = -stars[:,1]/r*v  # Velocity in x direction
     stars[:, 5] = stars[:,0]/r*v # Velocity in y direction
     #np.sqrt(stars[:, 0] * -interpolatelookup(gradient, stars[:, 0]))
+    stars[:, 6] = np.log(luminosity(stars[:, 3]))
+    stars[:, 7] = get_density(stars)
     return stars, gradient
 
 

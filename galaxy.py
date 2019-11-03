@@ -12,6 +12,7 @@ import matplotlib.animation as animation
 from mass import *
 
 wframe= None
+motion = np.empty((100, num_stars, 3))
 # Need to sample from gaussian to get initial distribution of points
 # Generate random points in cylindrical to have the symmetry, then convert to rectangular
 def update(idx, galaxy_parameters, ax, gradient):
@@ -28,6 +29,8 @@ def update(idx, galaxy_parameters, ax, gradient):
     # Plot the new wireframe and pause briefly before continuing.
     wframe = ax.scatter(galaxy_parameters[:,0], galaxy_parameters[:,1], galaxy_parameters[:, 2],
                         c=galaxy_parameters[:,3],cmap = 'viridis', s = 3)
+    
+    motion[idx, :, :] = galaxy_parameters[:, :3]
 
 
 def leapfrog(i, dt, x, vx, y, vy, gradient, mass):

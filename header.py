@@ -4,11 +4,11 @@ This file will contain a bunch of default settings and universal constants used 
 
 r_range = 50000 #maximum radius ly
 r_step = 1 #radial step
-dt = 1e3 #time step in years
+dt = 1e2 #time step in years
 num_stars = 2000 #number of stars
 
 rho_0 = 1e-21 #kg/m^3
-r_s = 25000 #ly
+r_s = 25000 * 9.461e15  # metric
 
 G = 6.67e-8 #graviational Constant
 kappa = 6.65/1.67 #thomspon scattering/mp (cgs)

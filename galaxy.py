@@ -14,7 +14,7 @@ from mass import *
 wframe= None
 # Need to sample from gaussian to get initial distribution of points
 # Generate random points in cylindrical to have the symmetry, then convert to rectangular
-def update(idx, galaxy_parameters, ax):
+def update(idx, galaxy_parameters, ax, gradient):
     global wframe
 
     # If a line collection is already remove it before drawing.
@@ -24,11 +24,11 @@ def update(idx, galaxy_parameters, ax):
 
     galaxy_parameters[:, 0], galaxy_parameters[:, 1], galaxy_parameters[:, 4], galaxy_parameters[:, 5] \
         = leapfrog(idx, dt, galaxy_parameters[:, 0], galaxy_parameters[:, 4],
-                                                                          galaxy_parameters[:, 1], galaxy_parameters[:, 5])
+                                                                          galaxy_parameters[:, 1], galaxy_parameters[:, 5],gradient,galaxy_parameters[:,3])
 
     # Plot the new wireframe and pause briefly before continuing.
     wframe = ax.scatter(galaxy_parameters[:, 0] * np.cos(galaxy_parameters[:, 1]), galaxy_parameters[:, 0] * np.sin(galaxy_parameters[:, 1]), galaxy_parameters[:, 2],
-                        c=galaxy_parameters[:, 0], cmap='viridis')
+                        c=galaxy_parameters[:, 5], cmap='viridis')
 
 
 def getAr():
@@ -38,7 +38,7 @@ def getAt():
     #returns angular acceleration
     return 0
 
-def leapfrog(i, dt, r, vr, theta, vtheta):
+def leapfrog(i, dt, r, vr, theta, vtheta, gradient, mass):
     '''
      - i = index of loop
      - dt = size of timestep
@@ -53,7 +53,7 @@ def leapfrog(i, dt, r, vr, theta, vtheta):
     vthetaNew = 0
 
     # if (i%2!=0): #Updates vr and vtheta for odd iterations of loop
-    vr += 0*dt
+    vr += (interpolatelookup(gradient, r)/mass*((np.pi*1e7)**2/9.46e15)+(vr*r)**2) *dt
     rNew = r + vr*dt
     vtheta += 0*dt
     thetaNew = theta + vtheta*dt
@@ -96,7 +96,7 @@ def NFW_potential(r,rho_0,r_s):
     - rho_0 is the mass density
     - r_s is the radius in which half the mass is inside
     '''
-    return -1*(4*np.pi*rho_0*r_s**3/r)*np.log(1+r/r_s)
+    return -1*(4*np.pi*rho_0*r_s**3/r/9.461e15)*np.log(1+r*9.461e15/r_s)
 
 
 def gengrad(potential, bin_width):
@@ -107,7 +107,7 @@ def gengrad(potential, bin_width):
     :return: inward radial force based on the radius. Scalar.
     '''
 
-    force = - (potential[1:] - potential[:-1]) / bin_width
+    force = - (potential[1:] - potential[:-1]) / bin_width / 9.461e15 #METRIC N
 
     return force
 
@@ -119,7 +119,7 @@ def generate_galaxy(num_stars, radius):
     returns the coordinates of each star, the mass, the velocity in (r, theta) coordinates
     """
     genlookup(5*r_range, r_step, NFW_potential, [rho_0,r_s], "potentials.npy")
-    potential = 1e19 * np.load('potentials.npy')
+    potential = np.load('potentials.npy')
     gradient = gengrad(potential, 1)
 
     stars = np.empty((num_stars, 6))
@@ -134,9 +134,10 @@ def generate_galaxy(num_stars, radius):
     # Velocities initialized with unit velocity in random directions
     #directions = np.random.normal(0, np.pi, )
     stars[:, 4] = 0  # Velocity in radial direction
-    stars[:, 5] = 1.14e-5 * stars[:, 0]**(1/3) # Velocity in theta direction
+    stars[:, 5] = np.sqrt(stars[:, 0] * 9.461e15 * -interpolatelookup(gradient, stars[:, 0])) / 9.461e15 * np.pi * 1e7 / stars[:, 0]  # Velocity in theta direction
+    print(stars[0, 5])
     #np.sqrt(stars[:, 0] * -interpolatelookup(gradient, stars[:, 0]))
-    return stars
+    return stars, gradient
 
 
 def graph(rdata, thetadata, zdata):

@@ -28,11 +28,13 @@ def leapfrog(i, dt, r, vr, theta, vtheta):
     '''
     rNew = 0
     thetaNew =0
+    vrNew = 0
+    vthetaNew = 0
 
     if (i%2!=0): #Updates vr and vtheta for odd iterations of loop
-        vrNew = getAr()*dt
+        vrNew += 0*dt
         rNew = r + vrNew*dt
-        vthetaNew = getAt()*dt
+        vthetaNew += 0*dt
         thetaNew = theta + vthetaNew*dt
     else: #Does not update vr and vtheta for even iterations of loop
         rNew = r + vr*dt

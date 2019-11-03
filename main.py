@@ -25,7 +25,7 @@ if __name__=='__main__':
 
     galaxy_parameters, gradient = generate_galaxy(num_stars,r_range)  # creating galaxy
 
-    ani = animation.FuncAnimation(fig, update, 200, interval=1000/fps, fargs = (galaxy_parameters,ax,gradient, ))
+    ani = animation.FuncAnimation(fig, update, 400, interval=1000/fps, fargs = (galaxy_parameters,ax,gradient, ))
     print('ass')
     fn = 'gacjasasld'
     ani.save(fn+'.mp4',fps=fps)

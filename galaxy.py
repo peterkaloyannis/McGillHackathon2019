@@ -6,10 +6,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 from header import *
 from mpl_toolkits import mplot3d
+from mpl_toolkits.mplot3d import axes3d
 import plotly.graph_objects as go
-
+import matplotlib.animation as animation
+wframe= None
 # Need to sample from gaussian to get initial distribution of points
 # Generate random points in cylindrical to have the symmetry, then convert to rectangular
+def update(idx,galaxy, ax):
+
+    global wframe
+    # If a line collection is already remove it before drawing.
+    if wframe:
+        ax.collections.remove(wframe)
+
+    galaxy[:, 0], galaxy[:, 1], galaxy[:,4], galaxy[:,5] = leapfrog(idx, 0.1, galaxy[:, 0], galaxy[:, 5], galaxy[:, 1], galaxy[:, 4])
+
+    # Plot the new wireframe and pause briefly before continuing.
+    wframe = ax.scatter(galaxy[:, 0] * np.cos(galaxy[:, 1]), galaxy[:, 0] * np.sin(galaxy[:, 1]), galaxy[:, 2], c = galaxy[:, 0], cmap='viridis')
+
 def getAr():
     #returns radial acceleration
     return 10
@@ -36,10 +50,10 @@ def leapfrog(i, dt, r, vr, theta, vtheta):
         rNew = r + vrNew*dt
         vthetaNew += 0*dt
         thetaNew = theta + vthetaNew*dt
-    else: #Does not update vr and vtheta for even iterations of loop
-        rNew = r + vr*dt
-        thetaNew = theta + vtheta*dt
-    return rNew, thetaNew
+    # else: #Does not update vr and vtheta for even iterations of loop
+    #     rNew = r + vr*dt
+    #     thetaNew = theta + vtheta*dt
+    return rNew, thetaNew, vrNew, vthetaNew
 
 def interpolatelookup(table, r, r_range= r_range, r_step= r_step):
     '''

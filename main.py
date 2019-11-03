@@ -29,4 +29,5 @@ if __name__=='__main__':
     print('ass')
     fn = 'gacjasasld'
     ani.save(fn+'.mp4',fps=fps)
-
+    
+    np.savetxt("motions.csv", motion.reshape((300, num_stars)), delimiter=',')

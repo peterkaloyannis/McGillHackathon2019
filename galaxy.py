@@ -25,7 +25,13 @@ def update(idx, galaxy_parameters, ax, gradient):
     galaxy_parameters[:, 0], galaxy_parameters[:, 1], galaxy_parameters[:, 4], galaxy_parameters[:, 5] \
         = leapfrog(idx, dt, galaxy_parameters[:, 0],
                     galaxy_parameters[:, 4], galaxy_parameters[:, 1],galaxy_parameters[:,5],gradient, galaxy_parameters[:,3])
+    
+    if idx % 20 == 0:
+        galaxy_parameters[:, 7] = get_density(galaxy_parameters)
 
+    if idx % 5 == 0:
+        print("%f%% done."% (idx/100))
+        
     # Plot the new wireframe and pause briefly before continuing.
     wframe = ax.scatter(galaxy_parameters[:,0], galaxy_parameters[:,1], galaxy_parameters[:, 2],
                         s=2, c=-galaxy_parameters[:, 7], cmap='cool')

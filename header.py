@@ -5,7 +5,7 @@ This file will contain a bunch of default settings and universal constants used 
 r_range = 50000 #maximum radius ly
 r_step = 1 #radial step
 dt = 1 #time step in years
-num_stars = 100000 #number of stars
+num_stars = 2000 #number of stars
 
 rho_0 = 1e-21 #kg/m^3
 r_s = 25000 #ly

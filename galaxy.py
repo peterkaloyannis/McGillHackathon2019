@@ -12,14 +12,16 @@ import matplotlib.animation as animation
 wframe= None
 # Need to sample from gaussian to get initial distribution of points
 # Generate random points in cylindrical to have the symmetry, then convert to rectangular
-def update(idx,galaxy, ax):
+def update(idx):
 
     global wframe
+    global ax
+    global galaxy
     # If a line collection is already remove it before drawing.
     if wframe:
         ax.collections.remove(wframe)
 
-    galaxy[:, 0], galaxy[:, 1], galaxy[:,4], galaxy[:,5] = leapfrog(idx, 0.1, galaxy[:, 0], galaxy[:, 5], galaxy[:, 1], galaxy[:, 4])
+    galaxy[:, 0], galaxy[:, 1], galaxy[:,4], galaxy[:,5] = leapfrog(idx, 0.1, galaxy[:, 0], galaxy[:, 4], galaxy[:, 1], galaxy[:, 5])
 
     # Plot the new wireframe and pause briefly before continuing.
     wframe = ax.scatter(galaxy[:, 0] * np.cos(galaxy[:, 1]), galaxy[:, 0] * np.sin(galaxy[:, 1]), galaxy[:, 2], c = galaxy[:, 0], cmap='viridis')
@@ -45,15 +47,16 @@ def leapfrog(i, dt, r, vr, theta, vtheta):
     vrNew = 0
     vthetaNew = 0
 
-    if (i%2!=0): #Updates vr and vtheta for odd iterations of loop
-        vrNew += 0*dt
-        rNew = r + vrNew*dt
-        vthetaNew += 0*dt
-        thetaNew = theta + vthetaNew*dt
+    # if (i%2!=0): #Updates vr and vtheta for odd iterations of loop
+    vr += 0*dt
+    rNew = r + vr*dt
+    vtheta += 0*dt
+    thetaNew = theta + vtheta*dt
+    # print(theta-thetaNew)
     # else: #Does not update vr and vtheta for even iterations of loop
     #     rNew = r + vr*dt
     #     thetaNew = theta + vtheta*dt
-    return rNew, thetaNew, vrNew, vthetaNew
+    return rNew, thetaNew, vr, vtheta
 
 def interpolatelookup(table, r, r_range= r_range, r_step= r_step):
     '''

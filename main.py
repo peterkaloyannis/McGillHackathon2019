@@ -18,8 +18,8 @@ if __name__=='__main__':
     ax = fig.add_subplot(111, projection='3d')
     galaxy = generate_galaxy(num_stars,r_range) #creating galaxy
 
-    ani = animation.FuncAnimation(fig, update, 100, interval=1000/fps, fargs = (galaxy,ax,))
+    ani = animation.FuncAnimation(fig, update, 100, interval=1000/fps)#, fargs = (galaxy,ax,))
     print('ass')
     fn = 'gacjasasld'
-    ani.save(fn+'.wmv',fps=fps)
+    ani.save(fn+'.mp4',fps=fps)
 

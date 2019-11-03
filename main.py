@@ -19,14 +19,13 @@ if __name__=='__main__':
     global galaxy
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ax.view_init(elev=90., azim=45)
     ax.set_zlim(-3*r_range, 3*r_range)
     ax.set_ylim(-3*r_range, 3*r_range)
     ax.set_xlim(-3*r_range, 3*r_range)
 
     galaxy_parameters, gradient = generate_galaxy(num_stars,r_range)  # creating galaxy
 
-    ani = animation.FuncAnimation(fig, update, 100, interval=1000/fps, fargs = (galaxy_parameters,ax,gradient, ))
+    ani = animation.FuncAnimation(fig, update, 200, interval=1000/fps, fargs = (galaxy_parameters,ax,gradient, ))
     print('ass')
     fn = 'gacjasasld'
     ani.save(fn+'.mp4',fps=fps)

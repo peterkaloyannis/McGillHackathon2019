@@ -53,6 +53,6 @@ def mass_generator(length):
         elif 0.96 <= random_array[i] < 0.99:
             mass_list.append(np.random.uniform(2,4))
         else:
-            mass_list.append(np.random.uniform(4,100))
+            mass_list.append(np.random.uniform(4,10))
 
     return mass_list

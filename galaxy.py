@@ -28,7 +28,7 @@ def update(idx, galaxy_parameters, ax, gradient):
 
     # Plot the new wireframe and pause briefly before continuing.
     wframe = ax.scatter(galaxy_parameters[:, 0] * np.cos(galaxy_parameters[:, 1]), galaxy_parameters[:, 0] * np.sin(galaxy_parameters[:, 1]), galaxy_parameters[:, 2],
-                        c=galaxy_parameters[:, 5], cmap='viridis')
+                        c=np.log(galaxy_parameters[:, 5]), cmap='viridis')
 
 
 def getAr():
@@ -53,7 +53,10 @@ def leapfrog(i, dt, r, vr, theta, vtheta, gradient, mass):
     vthetaNew = 0
 
     # if (i%2!=0): #Updates vr and vtheta for odd iterations of loop
-    vr += (interpolatelookup(gradient, r)/mass*((np.pi*1e7)**2/9.46e15)+(vr*r)**2) *dt
+    dv = (interpolatelookup(gradient, r) * ((sectoyear)**2/conversion)+(vtheta**2*np.abs(r))) *dt
+    dv[dv<1e-5]=0
+    vr += dv
+    # print(vr)
     rNew = r + vr*dt
     vtheta += 0*dt
     thetaNew = theta + vtheta*dt
@@ -70,10 +73,11 @@ def interpolatelookup(table, r, r_range= r_range, r_step= r_step):
     - r_step is the radial step
     - r is the current radius
     '''
-    r_lower = np.floor(r) #bottom radius
+    # print(max(r))
+    r_lower = np.floor(np.abs(r)) #bottom radius
     bottom_index = (r_lower*r_step).astype(np.int)
     top_index = bottom_index+1
-    delta_r = r-bottom_index
+    delta_r = np.abs(r)-bottom_index
 
     return (table[top_index]-table[bottom_index])/r_step*delta_r+table[bottom_index] 
 
@@ -96,7 +100,7 @@ def NFW_potential(r,rho_0,r_s):
     - rho_0 is the mass density
     - r_s is the radius in which half the mass is inside
     '''
-    return -1*(4*np.pi*rho_0*r_s**3/r/9.461e15)*np.log(1+r*9.461e15/r_s)
+    return -1*(4*np.pi*rho_0*r_s**3/r/conversion)*np.log(1+r*conversion/r_s)
 
 
 def gengrad(potential, bin_width):
@@ -107,7 +111,7 @@ def gengrad(potential, bin_width):
     :return: inward radial force based on the radius. Scalar.
     '''
 
-    force = - (potential[1:] - potential[:-1]) / bin_width / 9.461e15 #METRIC N
+    force = - (potential[1:] - potential[:-1]) / bin_width / conversion #METRIC N
 
     return force
 
@@ -118,11 +122,16 @@ def generate_galaxy(num_stars, radius):
     - radius is the radius in which around two thirds of the stars lie (one sigma)
     returns the coordinates of each star, the mass, the velocity in (r, theta) coordinates
     """
-    genlookup(5*r_range, r_step, NFW_potential, [rho_0,r_s], "potentials.npy")
+    genlookup(1000000, r_step, NFW_potential, [rho_0,r_s], "potentials.npy")
     potential = np.load('potentials.npy')
-    gradient = gengrad(potential, 1)
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
 
-    stars = np.empty((num_stars, 6))
+    gradient = gengrad(potential, 1)
+    plt.plot(np.linspace(0, radius, radius), gradient[:radius])
+    plt.show()
+
+    stars = np.empty((num_stars, 7))
     # Work in cylindrical coordinates
     stars[:, 0] = np.abs(np.random.normal(0, radius, num_stars))  # Distance from center from gaussian
     stars[:, 1] = np.random.uniform(0, 2 * np.pi, num_stars)  # Uniform dist for angle
@@ -132,11 +141,25 @@ def generate_galaxy(num_stars, radius):
     stars[:, 3] = np.asarray(mass_generator(num_stars)) * 1.98e+30  # Masses in metric (conversion)
 
     # Velocities initialized with unit velocity in random directions
-    #directions = np.random.normal(0, np.pi, )
+    directions = np.random.normal(0, .0000001, num_stars)
+    v = np.sqrt(stars[:, 0] * conversion * -interpolatelookup(gradient, stars[:, 0])) / conversion * sectoyear / stars[:, 0]
+
+        #np.sqrt(stars[:, 0] * 9.461e15 * -interpolatelookup(gradient, stars[:, 0])) / 9.461e15 * np.pi * 1e7 / stars[:, 0]
     stars[:, 4] = 0  # Velocity in radial direction
-    stars[:, 5] = np.sqrt(stars[:, 0] * 9.461e15 * -interpolatelookup(gradient, stars[:, 0])) / 9.461e15 * np.pi * 1e7 / stars[:, 0]  # Velocity in theta direction
-    print(stars[0, 5])
+    stars[:, 5] = v + np.random.normal(0, v/10, num_stars)  # Velocity in theta direction
     #np.sqrt(stars[:, 0] * -interpolatelookup(gradient, stars[:, 0]))
+
+    #stars[:, 6] = 1/2 * stars[:, 3] * v ** 2
+
+    # too_fast = np.argwhere(stars[:, 6] > -interpolatelookup(potential, stars[:, 0]))
+    # print(too_fast)
+    # for star in stars[too_fast[0]]:
+    #     idx = np.searchsorted(potential, star[6], side='right')
+    #     if idx > 0 and (idx == len(potential) or math.fabs(star[6] - potential[idx-1]) < math.fabs(star[6] - potential[idx])):
+    #         star[0] = idx - 1
+    #     else:
+    #         star[0] = idx
+
     return stars, gradient
 
 
@@ -166,7 +189,7 @@ def graph(rdata, thetadata, zdata):
 
 if __name__ == '__main__':
 
-    x = np.linspace(1,50001,50001)
+    x = np.linspace(1,r_range, np.int(r_range/r_step-2))
     # y = NFW_potential(x,1e-21,25000)
     # plt.plot(x,y)
     # plt.xlabel("Radius [ly]")
@@ -181,6 +204,6 @@ if __name__ == '__main__':
     # graph(rdata, thetadata, zdata)
     genlookup(r_range, r_step, NFW_potential, [rho_0,r_s], "potentials.npy")
     potential = np.load('potentials.npy')
-    print(interpolatelookup(potential, 10003.7))
-    plt.plot(potential)
-    plt.show()
+    grad = gengrad(potential, r_step)
+    plt.plot(np.sqrt(-x*conversion*grad)/conversion*np.pi*1e7)
+    #plt.show()

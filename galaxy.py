@@ -118,11 +118,16 @@ def generate_galaxy(num_stars, radius):
     - radius is the radius in which around two thirds of the stars lie (one sigma)
     returns the coordinates of each star, the mass, the velocity in (r, theta) coordinates
     """
-    genlookup(5*r_range, r_step, NFW_potential, [rho_0,r_s], "potentials.npy")
-    potential = 1e19 * np.load('potentials.npy')
-    gradient = gengrad(potential, 1)
+    genlookup(1000000, r_step, NFW_potential, [rho_0,r_s], "potentials.npy")
+    potential = np.load('potentials.npy')
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
 
-    stars = np.empty((num_stars, 6))
+    gradient = gengrad(potential, 1)
+    plt.plot(np.linspace(0, radius, radius), gradient[:radius])
+    plt.show()
+
+    stars = np.empty((num_stars, 7))
     # Work in cylindrical coordinates
     stars[:, 0] = np.abs(np.random.normal(0, radius, num_stars))  # Distance from center from gaussian
     stars[:, 1] = np.random.uniform(0, 2 * np.pi, num_stars)  # Uniform dist for angle
@@ -131,12 +136,14 @@ def generate_galaxy(num_stars, radius):
     # Mass of stars
     stars[:, 3] = np.asarray(mass_generator(num_stars)) * 1.98e+30  # Masses in metric (conversion)
 
+
     # Velocities initialized with unit velocity in random directions
-    #directions = np.random.normal(0, np.pi, )
+    direction = np.random.normal(0, 1e-6, num_stars)
+    v = np.sqrt(stars[:, 0] * conversion * -interpolatelookup(gradient, stars[:, 0])) / conversion * sectoyear
     stars[:, 4] = 0  # Velocity in radial direction
-    stars[:, 5] = 1.14e-5 * stars[:, 0]**(1/3) # Velocity in theta direction
-    #np.sqrt(stars[:, 0] * -interpolatelookup(gradient, stars[:, 0]))
-    return stars
+    stars[:, 5] = np.sqrt(stars[:, 0] * conversion * -interpolatelookup(gradient, stars[:, 0])) / conversion * sectoyear / stars[:, 0]  # Velocity in theta direction
+
+    return stars, gradient
 
 
 def graph(rdata, thetadata, zdata):

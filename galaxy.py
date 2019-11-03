@@ -28,7 +28,7 @@ def update(idx, galaxy_parameters, ax, gradient):
 
     # Plot the new wireframe and pause briefly before continuing.
     wframe = ax.scatter(galaxy_parameters[:,0], galaxy_parameters[:,1], galaxy_parameters[:, 2],
-                        c=galaxy_parameters[:,3],cmap = 'viridis', s = 3)
+                        s=2, c=-galaxy_parameters[:, 7], cmap='cool')
     
     motion[idx, :, :] = galaxy_parameters[:, :3]
 
